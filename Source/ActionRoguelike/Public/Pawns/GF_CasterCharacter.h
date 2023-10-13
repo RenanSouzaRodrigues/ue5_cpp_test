@@ -35,22 +35,22 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Class Config")
 	float SprintSpeed = 1000.0f;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Inputs")
+	UPROPERTY(EditAnywhere, Category = "Inputs")
 	UInputMappingContext* CharacterInputMappingContext;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Inputs")
+	UPROPERTY(EditAnywhere, Category = "Inputs")
 	UInputAction* IA_Movement;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Inputs")
+	UPROPERTY(EditAnywhere, Category = "Inputs")
 	UInputAction* IA_Look;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Inputs")
+	UPROPERTY(EditAnywhere, Category = "Inputs")
 	UInputAction* IA_Jump;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Inputs")
+	UPROPERTY(EditAnywhere, Category = "Inputs")
 	UInputAction* IA_Shoot;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Inputs")
+	UPROPERTY(EditAnywhere, Category = "Inputs")
 	UInputAction* IA_Sprint;
 
 	UPROPERTY(EditAnywhere, Category = "Attacks")
@@ -66,12 +66,16 @@ protected:
 	void Sprint(const FInputActionValue& Value);
 	void StopSprinting(const FInputActionValue& Value);
 	void ShootPrimaryWeapon(const FInputActionValue& Value);
-	
+
+	// Command Functions
+	UFUNCTION(Exec) void SetPlayerMovementSpeed(float NewSpeed);
+	UFUNCTION(Exec)	void SetPlayerJumpForce(float NewForce);
 
 private:
 	float baseCharacterSpeed;
 	
 private:
 	void BuildClass();
+	void AddInputMapping();
 	void DebugCharacter();
 };

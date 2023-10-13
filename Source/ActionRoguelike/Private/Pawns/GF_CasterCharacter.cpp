@@ -15,12 +15,40 @@ AGF_CasterCharacter::AGF_CasterCharacter()
 void AGF_CasterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	AddInputMapping();
 }
 
 void AGF_CasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if (bDisplayDebugInfo) DebugCharacter();
+}
+
+void AGF_CasterCharacter::BuildClass()
+{
+	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>("Camera Spring Arm");
+	CameraSpringArm->SetupAttachment(RootComponent);
+	
+	CharacterCamera = CreateDefaultSubobject<UCameraComponent>("Character Camera");
+	CharacterCamera->SetupAttachment(CameraSpringArm);
+
+	baseCharacterSpeed = GetCharacterMovement()->MaxWalkSpeed;
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	CameraSpringArm->bUsePawnControlRotation = true;
+	bUseControllerRotationYaw = false;
+}
+
+void AGF_CasterCharacter::AddInputMapping()
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		UEnhancedInputLocalPlayerSubsystem* Subsystem =
+			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+
+		if (Subsystem) Subsystem->AddMappingContext(CharacterInputMappingContext, 0);
+	}
 }
 
 void AGF_CasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -35,6 +63,8 @@ void AGF_CasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		EnhancedInputs->BindAction(IA_Jump, ETriggerEvent::Canceled, this, &ACharacter::StopJumping);
 		EnhancedInputs->BindAction(IA_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		EnhancedInputs->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &AGF_CasterCharacter::Sprint);
+		EnhancedInputs->BindAction(IA_Sprint, ETriggerEvent::Canceled, this, &AGF_CasterCharacter::StopSprinting);
+		EnhancedInputs->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &AGF_CasterCharacter::StopSprinting);
 		EnhancedInputs->BindAction(IA_Shoot, ETriggerEvent::Triggered, this, &AGF_CasterCharacter::ShootPrimaryWeapon);
 	}
 }
@@ -88,51 +118,35 @@ void AGF_CasterCharacter::ShootPrimaryWeapon(const FInputActionValue& Value)
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParamenter);
 }
 
-void AGF_CasterCharacter::BuildClass()
-{
-	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>("Camera Spring Arm");
-	CameraSpringArm->SetupAttachment(RootComponent);
-	
-	CharacterCamera = CreateDefaultSubobject<UCameraComponent>("Character Camera");
-	CharacterCamera->SetupAttachment(CameraSpringArm);
-
-	baseCharacterSpeed = GetCharacterMovement()->MaxWalkSpeed;
-
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-	CameraSpringArm->bUsePawnControlRotation = true;
-	bUseControllerRotationYaw = false;
-}
-
 void AGF_CasterCharacter::DebugCharacter()
 {
 	const float DrawScale = 100.0f;
-	const float Thickness = 5.0f;
+	const float Thickness = 2.0f;
 
 	FVector LineStart = GetActorLocation();
-	LineStart += GetActorRightVector() * 100.0f;
-	FVector ActorDirection_LineEnd = LineStart + (GetActorForwardVector() * 100.0f);
-	DrawDebugDirectionalArrow(
-		GetWorld(),
-		LineStart,
-		ActorDirection_LineEnd,
-		DrawScale,
-		FColor::Yellow,
-		false,
-		0.0f,
-		0,
-		Thickness
-	);
+	LineStart += GetActorRightVector() * 80.0f;
+	FVector ActorDirection_LineEnd = LineStart + (GetActorForwardVector() * 60.0f);
+	DrawDebugDirectionalArrow(GetWorld(), LineStart, ActorDirection_LineEnd, DrawScale, FColor::Yellow,false, 0.0f, 0, Thickness);
 
-	FVector ControllerDirection_LineEnd = LineStart + (GetControlRotation().Vector() * 100.0f);
-	DrawDebugDirectionalArrow(
-		GetWorld(),
-		LineStart,
-		ControllerDirection_LineEnd,
-		DrawScale, 
-		FColor::Green,
-		false,
-		0.0f,
-		0,
-		Thickness
-	);	
+	FVector ControllerDirection_LineEnd = LineStart + (GetControlRotation().Vector() * 60.0f);
+	DrawDebugDirectionalArrow(GetWorld(), LineStart, ControllerDirection_LineEnd, DrawScale, FColor::Green, false,0.0f, 0, Thickness);
+
+	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::White, TEXT("----------------------"));
+	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, TEXT("--> Controller Direction"));
+	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, TEXT("--> Actor Direction"));
+	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::White, TEXT("::Direction Arrows::"));
+	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::White, TEXT("----------------------"));
+	
+	// GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, FString::Printf("Movement Speed: %d", GetCharacterMovement()->MaxWalkSpeed));
+
+}
+
+void AGF_CasterCharacter::SetPlayerMovementSpeed(float NewSpeed)
+{
+	GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
+}
+
+void AGF_CasterCharacter::SetPlayerJumpForce(float NewForce)
+{
+	GetCharacterMovement()->JumpZVelocity = NewForce;
 }
