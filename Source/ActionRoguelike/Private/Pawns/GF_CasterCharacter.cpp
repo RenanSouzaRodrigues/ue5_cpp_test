@@ -140,13 +140,3 @@ void AGF_CasterCharacter::DebugCharacter()
 	// GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, FString::Printf("Movement Speed: %d", GetCharacterMovement()->MaxWalkSpeed));
 
 }
-
-void AGF_CasterCharacter::SetPlayerMovementSpeed(float NewSpeed)
-{
-	GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
-}
-
-void AGF_CasterCharacter::SetPlayerJumpForce(float NewForce)
-{
-	GetCharacterMovement()->JumpZVelocity = NewForce;
-}

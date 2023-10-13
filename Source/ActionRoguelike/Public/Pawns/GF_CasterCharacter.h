@@ -67,10 +67,7 @@ protected:
 	void StopSprinting(const FInputActionValue& Value);
 	void ShootPrimaryWeapon(const FInputActionValue& Value);
 
-	// Command Functions
-	UFUNCTION(Exec) void SetPlayerMovementSpeed(float NewSpeed);
-	UFUNCTION(Exec)	void SetPlayerJumpForce(float NewForce);
-
+	
 private:
 	float baseCharacterSpeed;
 	
