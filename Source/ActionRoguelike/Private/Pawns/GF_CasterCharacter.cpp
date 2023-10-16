@@ -131,12 +131,12 @@ void AGF_CasterCharacter::DebugCharacter()
 	FVector ControllerDirection_LineEnd = LineStart + (GetControlRotation().Vector() * 60.0f);
 	DrawDebugDirectionalArrow(GetWorld(), LineStart, ControllerDirection_LineEnd, DrawScale, FColor::Green, false,0.0f, 0, Thickness);
 
-	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::White, TEXT("----------------------"));
-	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, TEXT("--> Controller Direction"));
-	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, TEXT("--> Actor Direction"));
-	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::White, TEXT("::Direction Arrows::"));
-	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::White, TEXT("----------------------"));
-	
-	// GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, FString::Printf("Movement Speed: %d", GetCharacterMovement()->MaxWalkSpeed));
-
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::White, TEXT("----------------------"));
+		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, TEXT("--> Controller Direction"));
+		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, TEXT("--> Actor Direction"));
+		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::White, TEXT("::Direction Arrows::"));
+		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::White, TEXT("----------------------"));
+	}
 }
